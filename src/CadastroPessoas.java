@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
 
-public class CadastroPessoas {
+public class CadastroPessoasApp {
     public static void main(String[] args) {
 
         int numeroAtual = 0;
@@ -28,6 +28,7 @@ public class CadastroPessoas {
             System.out.println("5 - Pesquisar usuário por nome ou idade ou email");
             System.out.println("6 - Sair");
             System.out.print("Escolha uma opção: ");
+
             int escolha = scanner.nextInt();
             scanner.nextLine();
 
@@ -130,11 +131,89 @@ public class CadastroPessoas {
                     }
                     break;
                 case 3:
-                    // Código para cadastrar nova pergunta no formulário
+                    try {
+                        FileReader arquivoReader = new FileReader(arquivoPerguntas);
+                        BufferedReader leitor = new BufferedReader(arquivoReader);
+
+                        System.out.println("Perguntas atuais do formulário:");
+                        String linha;
+                        int numeroPergunta = 1;
+                        while ((linha = leitor.readLine()) != null) {
+                            System.out.println(linha);
+                            numeroPergunta++;
+                        }
+
+                        System.out.print("Digite a nova pergunta: ");
+                        String novaPergunta = scanner.nextLine();
+
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoPerguntas, true))) {
+                            writer.newLine();
+                            writer.write(numeroPergunta + " - " + novaPergunta);
+                            System.out.println("Nova pergunta adicionada com sucesso!");
+                        } catch (IOException e) {
+                            System.err.println("Erro ao adicionar nova pergunta: " + e.getMessage());
+                        }
+
+                        leitor.close();
+
+                    } catch (IOException e) {
+                        System.err.println("Erro ao cadastrar nova pergunta: " + e.getMessage());
+                    }
                     break;
                 case 4:
-                    // Código para deletar pergunta do formulário
+                    try {
+                        // Leitura do arquivo de perguntas
+                        FileReader arquivoReader = new FileReader(arquivoPerguntas);
+                        BufferedReader leitor = new BufferedReader(arquivoReader);
+
+                        // Lista todas as perguntas atuais
+                        System.out.println("Perguntas atuais no formulário:");
+                        String linha;
+                        int numeroPergunta = 1;
+                        while ((linha = leitor.readLine()) != null) {
+                            System.out.println(linha);
+                            numeroPergunta++;
+                        }
+
+                        // Solicita ao usuário o número da pergunta a ser deletada
+                        System.out.print("Digite o número da pergunta a ser deletada: ");
+                        int numeroPerguntaDeletar = scanner.nextInt();
+                        scanner.nextLine(); // Consumir a quebra de linha
+
+                        // Verifica se a pergunta pode ser deletada
+                        if (numeroPerguntaDeletar >= 5 && numeroPerguntaDeletar < numeroPergunta) {
+                            // Lê todas as perguntas do arquivo, exceto a que será deletada
+                            leitor.close(); // Fecha o leitor atual
+
+                            arquivoReader = new FileReader(arquivoPerguntas);
+                            leitor = new BufferedReader(arquivoReader);
+
+                            StringBuilder novoConteudo = new StringBuilder();
+                            numeroPergunta = 1;
+                            while ((linha = leitor.readLine()) != null) {
+                                if (numeroPergunta != numeroPerguntaDeletar) {
+                                    novoConteudo.append(linha).append(System.lineSeparator());
+                                }
+                                numeroPergunta++;
+                            }
+
+                            // Sobrescreve o arquivo com as perguntas atualizadas
+                            try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoPerguntas))) {
+                                writer.write(novoConteudo.toString().trim());
+                                System.out.println("Pergunta deletada com sucesso!");
+                            } catch (IOException e) {
+                                System.err.println("Erro ao sobrescrever o arquivo de perguntas: " + e.getMessage());
+                            }
+                        } else {
+                            System.out.println("Pergunta padrão, não pode ser deletada. Só podem ser deletadas as perguntas da 5ª em diante.");
+                        }
+
+                        leitor.close();
+                    } catch (IOException e) {
+                        System.err.println("Erro ao deletar pergunta: " + e.getMessage());
+                    }
                     break;
+
                 case 5:
                     // Código para pesquisar usuário por nome, idade ou email
                     break;
