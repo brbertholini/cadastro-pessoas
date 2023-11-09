@@ -5,11 +5,13 @@ public class CadastroPessoas {
     public static void main(String[] args) {
 
         int numeroAtual = 0;
+        String nomeFormatado = "";
+        String cadastro = "cadastros/" + numeroAtual + "-" + nomeFormatado + ".txt";
 
         try (BufferedReader configReader = new BufferedReader(new FileReader("numeroCadastros.txt"))) {
             numeroAtual = Integer.parseInt(configReader.readLine());
         } catch (IOException e) {
-            System.err.println("Erro ao ler o arquivo de número de cadastros: " + e.getMessage());;
+            System.err.println("Erro ao ler o arquivo de número de cadastros: " + e.getMessage());
         }
 
         String arquivoPerguntas = "formulario.txt";
@@ -70,7 +72,7 @@ public class CadastroPessoas {
                         try (BufferedWriter configWriter = new BufferedWriter(new FileWriter("numeroCadastros.txt"))) {
                             configWriter.write(String.valueOf(numeroAtual));
                         } catch (IOException e) {
-                            System.err.println("Erro ao atualizar o arquivo de número de cadastros: " + e.getMessage());;
+                            System.err.println("Erro ao atualizar o arquivo de número de cadastros: " + e.getMessage());
                         }
 
                         Usuario pessoa = new Usuario(nome, email, idade, altura);
@@ -80,19 +82,19 @@ public class CadastroPessoas {
                         System.out.println("Idade: " + pessoa.getIdade());
                         System.out.println("Altura: " + pessoa.getAltura());
 
-                        String nomeSemEspacos = nome.replace(" ", "");
-                        String nomeFormatado = nomeSemEspacos.toUpperCase();
 
-                        String cadastro = numeroAtual+ "-" + nomeFormatado + ".txt";
+                        String nomeSemEspacos = nome.replace(" ", "");
+                        nomeFormatado = nomeSemEspacos.toUpperCase();
+                        cadastro = "cadastros/" + numeroAtual + "-" + nomeFormatado + ".txt";
 
                         try (BufferedWriter writer = new BufferedWriter(new FileWriter(cadastro))) {
-                            writer.write("Nome: " + nome);
+                            writer.write(nome);
                             writer.newLine();
-                            writer.write("Email: " + email);
+                            writer.write(email);
                             writer.newLine();
-                            writer.write("Idade: " + idade);
+                            writer.write("" + idade);
                             writer.newLine();
-                            writer.write("Altura: " + altura);
+                            writer.write("" + altura);
                             writer.newLine();
                         } catch (IOException e) {
                             System.err.println("Erro ao criar o arquivo de dados do usuário: " + e.getMessage());
@@ -103,8 +105,29 @@ public class CadastroPessoas {
                     }
 
                     break;
+
                 case 2:
-                    // Código para listar usuários cadastrados
+                    File folder = new File("cadastros/");
+                    File[] files = folder.listFiles(new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return name.endsWith(".txt");
+                        }
+                    });
+
+                    if (files != null && files.length > 0) {
+                        System.out.println("Usuários cadastrados:");
+                        for (int i = 0; i < files.length; i++) {
+                            try (BufferedReader fileReader = new BufferedReader(new FileReader(files[i]))) {
+                                String firstLine = fileReader.readLine();
+                                System.out.println((i+1) + " - " + firstLine);
+                            } catch (IOException e) {
+                                System.err.println("Erro ao ler o arquivo: " + files[i].getName() + " - " + e.getMessage());
+                            }
+                        }
+                    } else {
+                        System.out.println("Nenhum usuário cadastrado.");
+                    }
                     break;
                 case 3:
                     // Código para cadastrar nova pergunta no formulário
@@ -125,4 +148,3 @@ public class CadastroPessoas {
         }
     }
 }
-
